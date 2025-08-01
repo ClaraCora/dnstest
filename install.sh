@@ -113,23 +113,121 @@ create_config_dirs() {
     print_status $GREEN "配置文件目录已创建"
 }
 
-# 生成默认配置文件
-generate_default_config() {
+# 获取用户配置
+get_user_config() {
+    # 检查是否为非交互式安装
+    if [[ "$NON_INTERACTIVE" == "true" ]]; then
+        print_status $BLUE "=== 非交互式安装模式 ==="
+        echo
+        dns_servers=${DNS_SERVERS:-"1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222"}
+        check_interval=${CHECK_INTERVAL:-300}
+        ping_count=${PING_COUNT:-5}
+        fluctuation_threshold=${FLUCTUATION_THRESHOLD:-0.5}
+        timeout_seconds=${TIMEOUT_SECONDS:-3}
+        
+        print_status $GREEN "使用环境变量配置:"
+        print_status $GREEN "DNS服务器: $dns_servers"
+        print_status $GREEN "检测间隔: ${check_interval}秒"
+        print_status $GREEN "Ping次数: ${ping_count}次"
+        print_status $GREEN "波动阈值: ${fluctuation_threshold}"
+        print_status $GREEN "超时时间: ${timeout_seconds}秒"
+        echo
+        return
+    fi
+    
+    print_status $BLUE "=== 配置DNS监控服务 ==="
+    echo
+    
+    # DNS服务器配置
+    print_status $YELLOW "请输入DNS服务器IP地址（用英文逗号分隔）:"
+    print_status $BLUE "默认: 1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222"
+    read -p "DNS服务器: " dns_servers
+    dns_servers=${dns_servers:-"1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222"}
+    
+    # 检测间隔
+    print_status $YELLOW "请输入检测间隔（秒）:"
+    print_status $BLUE "默认: 300秒 (5分钟)"
+    read -p "检测间隔: " check_interval
+    check_interval=${check_interval:-300}
+    
+    # 验证检测间隔
+    if [[ ! "$check_interval" =~ ^[0-9]+$ ]] || [[ "$check_interval" -lt 60 ]]; then
+        print_status $RED "错误: 检测间隔必须为大于60的整数"
+        exit 1
+    fi
+    
+    # Ping次数
+    print_status $YELLOW "请输入每次ping测试的次数:"
+    print_status $BLUE "默认: 5次"
+    read -p "Ping次数: " ping_count
+    ping_count=${ping_count:-5}
+    
+    # 验证ping次数
+    if [[ ! "$ping_count" =~ ^[0-9]+$ ]] || [[ "$ping_count" -lt 1 ]]; then
+        print_status $RED "错误: Ping次数必须为大于0的整数"
+        exit 1
+    fi
+    
+    # 波动阈值
+    print_status $YELLOW "请输入波动阈值:"
+    print_status $BLUE "默认: 0.5"
+    read -p "波动阈值: " fluctuation_threshold
+    fluctuation_threshold=${fluctuation_threshold:-0.5}
+    
+    # 超时时间
+    print_status $YELLOW "请输入ping超时时间（秒）:"
+    print_status $BLUE "默认: 3秒"
+    read -p "超时时间: " timeout_seconds
+    timeout_seconds=${timeout_seconds:-3}
+    
+    # 验证超时时间
+    if [[ ! "$timeout_seconds" =~ ^[0-9]+$ ]] || [[ "$timeout_seconds" -lt 1 ]]; then
+        print_status $RED "错误: 超时时间必须为大于0的整数"
+        exit 1
+    fi
+    
+    echo
+    print_status $GREEN "配置信息确认:"
+    print_status $GREEN "DNS服务器: $dns_servers"
+    print_status $GREEN "检测间隔: ${check_interval}秒"
+    print_status $GREEN "Ping次数: ${ping_count}次"
+    print_status $GREEN "波动阈值: ${fluctuation_threshold}"
+    print_status $GREEN "超时时间: ${timeout_seconds}秒"
+    echo
+}
+
+# 生成配置文件
+generate_config() {
     local config_file="/etc/XrayR/ping_monitor_config.json"
     
     if [[ ! -f "$config_file" ]]; then
-        cat > "$config_file" << 'EOF'
+        cat > "$config_file" << EOF
 {
-  "dns_servers": "1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222",
-  "check_interval": 300,
-  "ping_count": 5,
-  "fluctuation_threshold": 0.5,
-  "timeout_seconds": 3
+  "dns_servers": "$dns_servers",
+  "check_interval": $check_interval,
+  "ping_count": $ping_count,
+  "fluctuation_threshold": $fluctuation_threshold,
+  "timeout_seconds": $timeout_seconds
 }
 EOF
-        print_status $GREEN "默认配置文件已生成: $config_file"
+        print_status $GREEN "配置文件已生成: $config_file"
     else
-        print_status $YELLOW "配置文件已存在: $config_file"
+        print_status $YELLOW "配置文件已存在，是否覆盖? (y/N)"
+        read -p "选择: " overwrite
+        if [[ "$overwrite" =~ ^[Yy]$ ]]; then
+            cat > "$config_file" << EOF
+{
+  "dns_servers": "$dns_servers",
+  "check_interval": $check_interval,
+  "ping_count": $ping_count,
+  "fluctuation_threshold": $fluctuation_threshold,
+  "timeout_seconds": $timeout_seconds
+}
+EOF
+            print_status $GREEN "配置文件已更新: $config_file"
+        else
+            print_status $YELLOW "保留现有配置文件"
+        fi
     fi
 }
 
@@ -264,10 +362,22 @@ DNS Ping测试自动更换服务安装程序
     --uninstall   卸载服务
     --help        显示此帮助信息
 
+环境变量 (非交互式安装):
+    DNS_SERVERS            DNS服务器IP地址，用逗号分隔
+    CHECK_INTERVAL         检测间隔（秒）
+    PING_COUNT            Ping测试次数
+    FLUCTUATION_THRESHOLD  波动阈值
+    TIMEOUT_SECONDS       超时时间（秒）
+    NON_INTERACTIVE       设置为true启用非交互式安装
+
 示例:
-    $0              # 安装服务
-    $0 --install    # 安装服务
-    $0 --uninstall  # 卸载服务
+    $0                                    # 交互式安装
+    $0 --install                          # 交互式安装
+    $0 --uninstall                        # 卸载服务
+    
+    # 非交互式安装
+    NON_INTERACTIVE=true DNS_SERVERS="1.1.1.1,8.8.8.8" $0
+    NON_INTERACTIVE=true CHECK_INTERVAL=600 $0
 EOF
 }
 
@@ -310,7 +420,8 @@ main() {
             # 安装步骤
             download_script
             create_config_dirs
-            generate_default_config
+            get_user_config
+            generate_config
             generate_dns_config
             create_systemd_service
             create_log_dir

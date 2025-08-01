@@ -25,9 +25,16 @@
 ### 方法一：一键安装（推荐）
 
 ```bash
-# 下载并运行安装脚本
+# 下载并运行安装脚本（交互式配置）
 curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh | sudo bash
 ```
+
+安装过程中会提示您输入以下配置：
+- **DNS服务器IP地址**: 用英文逗号分隔，如 `1.1.1.1,8.8.8.8,9.9.9.9`
+- **检测间隔**: 检测频率（秒），建议300秒以上
+- **Ping次数**: 每次测试的ping次数，建议3-5次
+- **波动阈值**: 网络稳定性阈值，建议0.5
+- **超时时间**: ping超时时间（秒），建议3秒
 
 ### 方法二：手动安装
 
@@ -36,7 +43,7 @@ curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh |
 git clone https://github.com/ClaraCora/dnstest.git
 cd dnstest
 
-# 2. 运行安装脚本
+# 2. 运行安装脚本（交互式配置）
 sudo bash install.sh
 
 # 3. 启动服务
@@ -44,6 +51,28 @@ sudo systemctl start ping-dns-monitor
 
 # 4. 设置开机自启
 sudo systemctl enable ping-dns-monitor
+```
+
+### 方法三：非交互式安装（自动化部署）
+
+```bash
+# 使用环境变量进行非交互式安装
+NON_INTERACTIVE=true \
+DNS_SERVERS="1.1.1.1,8.8.8.8,9.9.9.9" \
+CHECK_INTERVAL=300 \
+PING_COUNT=5 \
+FLUCTUATION_THRESHOLD=0.5 \
+TIMEOUT_SECONDS=3 \
+curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh | sudo bash
+```
+
+或者：
+
+```bash
+# 下载脚本后非交互式安装
+curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh -o install.sh
+chmod +x install.sh
+NON_INTERACTIVE=true DNS_SERVERS="1.1.1.1,8.8.8.8" sudo bash install.sh
 ```
 
 ## 使用方法
