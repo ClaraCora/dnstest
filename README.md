@@ -20,13 +20,21 @@
 - 9.9.9.9 (Quad9)
 - 208.67.222.222 (OpenDNS)
 
+## 快速安装
 
-### 手动安装
+### 方法一：一键安装（推荐）
+
+```bash
+# 下载并运行安装脚本
+curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh | sudo bash
+```
+
+### 方法二：手动安装
 
 ```bash
 # 1. 克隆仓库
 git clone https://github.com/ClaraCora/dnstest.git
-cd ping-dns-monitor
+cd dnstest
 
 # 2. 运行安装脚本
 sudo bash install.sh
@@ -167,6 +175,15 @@ sudo journalctl -u ping-dns-monitor -f
 
 ## 卸载
 
+### 方法一：使用卸载脚本（推荐）
+
+```bash
+# 下载并运行卸载脚本
+curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh | sudo bash --uninstall
+```
+
+### 方法二：手动卸载
+
 ```bash
 # 停止服务
 sudo systemctl stop ping-dns-monitor
@@ -182,6 +199,11 @@ sudo systemctl daemon-reload
 
 # 删除脚本文件
 sudo rm -f /usr/local/bin/ping_dns_monitor.sh
+
+# 可选：删除配置文件（谨慎操作）
+sudo rm -f /etc/XrayR/ping_monitor_config.json
+sudo rm -f /etc/XrayR/dns.json
+sudo rm -f /var/log/ping-dns-monitor.log
 ```
 
 ## 贡献
