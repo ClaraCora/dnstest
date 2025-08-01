@@ -26,14 +26,14 @@
 
 ```bash
 # 下载并运行安装脚本
-curl -fsSL https://raw.githubusercontent.com/your-username/ping-dns-monitor/main/install.sh | sudo bash
+curl -fsSL https://github.com/ClaraCora/dnstest/main/install.sh | sudo bash
 ```
 
 ### 方法二：手动安装
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-username/ping-dns-monitor.git
+git clone https://github.com/ClaraCora/dnstest.git
 cd ping-dns-monitor
 
 # 2. 运行安装脚本
