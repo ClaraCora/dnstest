@@ -141,13 +141,23 @@ get_user_config() {
     # DNS服务器配置
     print_status $YELLOW "请输入DNS服务器IP地址（用英文逗号分隔）:"
     print_status $BLUE "默认: 1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222"
-    read -p "DNS服务器: " dns_servers
+    if [[ -t 0 ]]; then
+        read -p "DNS服务器: " dns_servers
+    else
+        print_status $YELLOW "检测到非交互式环境，使用默认配置"
+        dns_servers="1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222"
+    fi
     dns_servers=${dns_servers:-"1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222"}
     
     # 检测间隔
     print_status $YELLOW "请输入检测间隔（秒）:"
     print_status $BLUE "默认: 300秒 (5分钟)"
-    read -p "检测间隔: " check_interval
+    if [[ -t 0 ]]; then
+        read -p "检测间隔: " check_interval
+    else
+        print_status $YELLOW "使用默认检测间隔: 300秒"
+        check_interval=300
+    fi
     check_interval=${check_interval:-300}
     
     # 验证检测间隔
@@ -159,7 +169,12 @@ get_user_config() {
     # Ping次数
     print_status $YELLOW "请输入每次ping测试的次数:"
     print_status $BLUE "默认: 5次"
-    read -p "Ping次数: " ping_count
+    if [[ -t 0 ]]; then
+        read -p "Ping次数: " ping_count
+    else
+        print_status $YELLOW "使用默认Ping次数: 5次"
+        ping_count=5
+    fi
     ping_count=${ping_count:-5}
     
     # 验证ping次数
@@ -171,13 +186,23 @@ get_user_config() {
     # 波动阈值
     print_status $YELLOW "请输入波动阈值:"
     print_status $BLUE "默认: 0.5"
-    read -p "波动阈值: " fluctuation_threshold
+    if [[ -t 0 ]]; then
+        read -p "波动阈值: " fluctuation_threshold
+    else
+        print_status $YELLOW "使用默认波动阈值: 0.5"
+        fluctuation_threshold=0.5
+    fi
     fluctuation_threshold=${fluctuation_threshold:-0.5}
     
     # 超时时间
     print_status $YELLOW "请输入ping超时时间（秒）:"
     print_status $BLUE "默认: 3秒"
-    read -p "超时时间: " timeout_seconds
+    if [[ -t 0 ]]; then
+        read -p "超时时间: " timeout_seconds
+    else
+        print_status $YELLOW "使用默认超时时间: 3秒"
+        timeout_seconds=3
+    fi
     timeout_seconds=${timeout_seconds:-3}
     
     # 验证超时时间
@@ -213,7 +238,12 @@ EOF
         print_status $GREEN "配置文件已生成: $config_file"
     else
         print_status $YELLOW "配置文件已存在，是否覆盖? (y/N)"
-        read -p "选择: " overwrite
+        if [[ -t 0 ]]; then
+            read -p "选择: " overwrite
+        else
+            print_status $YELLOW "非交互式环境，保留现有配置文件"
+            overwrite="N"
+        fi
         if [[ "$overwrite" =~ ^[Yy]$ ]]; then
             cat > "$config_file" << EOF
 {

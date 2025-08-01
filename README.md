@@ -25,9 +25,18 @@
 ### 方法一：一键安装（推荐）
 
 ```bash
-# 下载并运行安装脚本（交互式配置）
+# 方法1: 下载脚本后运行（推荐，支持交互式配置）
+curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh -o install.sh
+chmod +x install.sh
+sudo bash install.sh
+
+# 方法2: 直接运行（非交互式，使用默认配置）
 curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh | sudo bash
 ```
+
+**安装方法说明**：
+- **方法1（推荐）**: 下载脚本后运行，支持完整的交互式配置
+- **方法2**: 直接运行，在非交互式环境下使用默认配置
 
 安装过程中会提示您输入以下配置：
 - **DNS服务器IP地址**: 用英文逗号分隔，如 `1.1.1.1,8.8.8.8,9.9.9.9`
