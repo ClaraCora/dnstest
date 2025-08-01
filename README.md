@@ -26,7 +26,7 @@
 
 ```bash
 # 下载并运行安装脚本
-curl -fsSL https://github.com/ClaraCora/dnstest/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/refs/heads/main/install.sh | sudo bash
 ```
 
 ### 方法二：手动安装
