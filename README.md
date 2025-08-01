@@ -20,16 +20,8 @@
 - 9.9.9.9 (Quad9)
 - 208.67.222.222 (OpenDNS)
 
-## 快速安装
 
-### 方法一：一键安装（推荐）
-
-```bash
-# 下载并运行安装脚本
-curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/refs/heads/main/install.sh | sudo bash
-```
-
-### 方法二：手动安装
+### 手动安装
 
 ```bash
 # 1. 克隆仓库
