@@ -387,13 +387,8 @@ get_current_dns_ip() {
         return 1
     fi
     
-    # 尝试从配置文件中提取IP地址
-    local current_ip=$(jq -r '.servers[0]' "$DNS_CONFIG" 2>/dev/null)
-    
-    # 如果第一个元素是对象，尝试获取address字段
-    if [[ "$current_ip" == "null" ]] || [[ "$current_ip" == "{}" ]]; then
-        current_ip=$(jq -r '.servers[0].address' "$DNS_CONFIG" 2>/dev/null)
-    fi
+    # 查找配置文件中第一个有address字段的对象
+    local current_ip=$(jq -r '.servers[] | select(type == "object" and has("address")) | .address' "$DNS_CONFIG" 2>/dev/null | head -n 1)
     
     # 验证IP地址格式
     if [[ -n "$current_ip" ]] && [[ "$current_ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -435,8 +430,8 @@ update_dns_config() {
     local temp_config=$(mktemp)
     jq --arg new_ip "$new_ip" '
         .servers |= map(
-            if type == "string" then $new_ip
-            else if has("address") then .address = $new_ip else . end
+            if type == "object" and has("address") then .address = $new_ip
+            else .
             end
         )
     ' "$DNS_CONFIG" > "$temp_config"
