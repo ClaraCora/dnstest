@@ -1,0 +1,21 @@
+{
+  "servers": [
+    "1.1.1.1",
+    "8.8.8.8",
+    {
+      "address": "1.1.1.1",
+      "port": 53,
+      "domains": [
+        "geosite:netflix",
+        "geosite:disney",
+        "geosite:google",
+        "geosite:disney",
+        "youtube.com"
+      ],
+      "ips": [
+        "geoip:netflix"
+      ]
+    }
+  ],
+  "tag": "dns_inbound"
+} 

@@ -1,0 +1,7 @@
+{
+  "dns_servers": "1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222",
+  "check_interval": 300,
+  "ping_count": 5,
+  "fluctuation_threshold": 0.5,
+  "timeout_seconds": 3
+} 
