@@ -428,13 +428,27 @@ update_dns_config() {
     
     # 更新配置文件（不创建备份）
     local temp_config=$(mktemp)
-    jq --arg new_ip "$new_ip" '
-        .servers |= map(
-            if type == "object" and has("address") then .address = $new_ip
-            else .
-            end
-        )
-    ' "$DNS_CONFIG" > "$temp_config"
+    
+    # 提取当前的domains和ips
+    local domains=$(jq -r '.servers[] | select(type == "object" and has("domains")) | .domains | map("\"" + . + "\"") | join(",")' "$DNS_CONFIG" 2>/dev/null || echo '"geosite:netflix","geosite:disney","geosite:google","geosite:disney","youtube.com"')
+    local ips=$(jq -r '.servers[] | select(type == "object" and has("ips")) | .ips | map("\"" + . + "\"") | join(",")' "$DNS_CONFIG" 2>/dev/null || echo '"geoip:netflix"')
+    
+    # 构建新的JSON，保持数组在一行
+    cat > "$temp_config" << EOF
+{
+  "servers": [
+    "1.1.1.1",
+    "8.8.8.8",
+    {
+      "address": "$new_ip",
+      "port": 53,
+      "domains": [$domains],
+      "ips": [$ips]
+    }
+  ],
+  "tag": "dns_inbound"
+}
+EOF
     
     mv "$temp_config" "$DNS_CONFIG"
     
