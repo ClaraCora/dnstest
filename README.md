@@ -24,9 +24,9 @@
 
 ### 一键卸载命令
 
-、、、bash
+```bash
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh) --uninstall"
-、、、
+```
 
 ### 方法一：一键安装（推荐）
 
