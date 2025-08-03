@@ -1,4 +1,4 @@
-# DNS Ping测试自动更换服务
+<img width="666" height="142" alt="image" src="https://github.com/user-attachments/assets/7e7280aa-8a29-4fb0-9090-c97290051625" /># DNS Ping测试自动更换服务
 
 一个智能的DNS服务器监控和自动切换工具，通过ping测试自动选择最佳的DNS服务器，并自动更新XrayR配置。
 
@@ -21,6 +21,12 @@
 - 208.67.222.222 (OpenDNS)
 
 ## 快速安装
+
+### 一键卸载命令
+
+、、、bash
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/ClaraCora/dnstest/main/install.sh) --uninstall"
+、、、
 
 ### 方法一：一键安装（推荐）
 
